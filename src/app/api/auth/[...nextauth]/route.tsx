@@ -42,6 +42,7 @@ const authOptions: AuthOptions = {
     session({ token, session }) {
       if (token) {
         session.user = {
+          ...session.user,
           id: token.id,
           username: token.username,
           firstName: token.firstName,
