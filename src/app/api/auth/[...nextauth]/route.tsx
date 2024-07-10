@@ -14,7 +14,6 @@ const authOptions: AuthOptions = {
         try {
           const res = await Login(credentials?.username, credentials?.password);
           return { ...res };
-          throw new Error("Giriş başarılı.");
         } catch (error) {
           throw new Error(String(error));
         }
@@ -39,7 +38,7 @@ const authOptions: AuthOptions = {
 
       return token;
     },
-    session({ token, session }) {
+    session({ session, token }) {
       if (token) {
         session.user = {
           ...session.user,
