@@ -5,11 +5,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 //UI KIT
-import {
-  DataGridRef,
-  DataGridTypes,
-  Editing,
-} from "devextreme-react/data-grid";
+import { DataGridRef, DataGridTypes } from "devextreme-react/data-grid";
 import DataGrid, {
   Scrolling,
   Pager,
@@ -26,26 +22,28 @@ import DataGrid, {
   StateStoring,
   FilterPanel,
 } from "devextreme-react/data-grid";
+import notify from "devextreme/ui/notify";
 
 //Icons
 import { FaShoppingCart } from "react-icons/fa";
 
 //Hooks
-import useExportDataGrid from "@/app/Hooks/useExportDataGrid";
+import useExportDataGrid from "@/hooks/useExportDataGrid";
 
 //Types
-import { Card, Product } from "@/app/Lib/types";
+import { Card, Product } from "@/lib/types";
 
 //Services
-import { getCardsByUserId, updateCard } from "@/app/Services/cards";
-import ComponentHeader from "@/app/Components/ComponentHeader";
-import notify from "devextreme/ui/notify";
+import { getCardsByUserId } from "@/services/cards";
+
+//Components
+import ComponentHeader from "@/components/ComponentHeader";
 
 interface UserCardProps {
   userId?: number;
 }
 
-const ProductTable = ({ userId }: UserCardProps) => {
+const UserCard = ({ userId }: UserCardProps) => {
   // Hooks
   const dataGridRef = useRef<DataGridRef>(null);
   const onExporting = useExportDataGrid();
@@ -61,30 +59,19 @@ const ProductTable = ({ userId }: UserCardProps) => {
       }
       try {
         const userCardData = await getCardsByUserId(userId);
-        setUserCard(userCardData);
+        if (userCardData.data) {
+          setUserCard(userCardData.data);
+        }
       } catch (error) {
-        console.error("Failed to fetch user card:", error);
+        showNotification(error as string, "error");
       }
     };
 
     if (userId) {
       fetchUserCard();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
-
-  //Handlers
-  const handleUpdate = async (e: DataGridTypes.SavedEvent) => {
-    if (userCard?.id) {
-      try {
-        await updateCard(userCard?.id, e.changes[0].data);
-        showNotification("updated", "success");
-      } catch (error) {
-        showNotification("failed to update", "error");
-      }
-    } else {
-      showNotification("Card not found", "error");
-    }
-  };
   //Callbacks
   const showNotification = useCallback((message: string, type: string) => {
     notify(
@@ -110,13 +97,11 @@ const ProductTable = ({ userId }: UserCardProps) => {
       }
     );
   }, []);
-
   return (
     <>
       {userId ? (
         <>
           <ComponentHeader title="Product List" icon={<FaShoppingCart />} />
-
           <DataGrid
             scrolling={{ columnRenderingMode: "standard" }}
             ref={dataGridRef}
@@ -126,7 +111,6 @@ const ProductTable = ({ userId }: UserCardProps) => {
             allowColumnResizing={true}
             showRowLines={true}
             showBorders={true}
-            onSaved={(e) => handleUpdate(e)}
             onCellPrepared={(e) => {
               if (e.rowType === "header") {
                 e.cellElement.style.textAlign = "center";
@@ -141,12 +125,6 @@ const ProductTable = ({ userId }: UserCardProps) => {
               onExporting(e, "Products")
             }
           >
-            <Editing
-              mode="row"
-              allowUpdating={true}
-              allowDeleting={true}
-              allowAdding={true}
-            />
             <StateStoring
               enabled={true}
               type="localStorage"
@@ -253,4 +231,4 @@ const ProductTable = ({ userId }: UserCardProps) => {
   );
 };
 
-export default ProductTable;
+export default UserCard;

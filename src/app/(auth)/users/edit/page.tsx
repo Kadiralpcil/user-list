@@ -19,13 +19,13 @@ import notify from "devextreme/ui/notify";
 import { ButtonType } from "devextreme/common";
 
 //Types
-import { User } from "@/app/Lib/types";
+import { User } from "@/lib/types";
 
 //Services
-import { deleteUser, getUser, updateUser } from "@/app/Services/user";
+import { deleteUser, getUser, updateUser } from "@/services/user";
 
 //Components
-import ProductTable from "./productTable";
+import ProductTable from "./product-table";
 
 const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
@@ -53,10 +53,12 @@ const Edit = () => {
         const formData = formRef.current.instance().option("formData") as User;
         setLoading(true);
         try {
-          await updateUser(Number(id), formData);
-          showNotification("Updated", "success");
+          const updateRequest = await updateUser(Number(id), formData);
+          if (updateRequest.error === false) {
+            showNotification("Updated", "success");
+          }
         } catch (error) {
-          showNotification("Failed to update", "error");
+          showNotification(error as string, "error");
         } finally {
           setLoading(false);
         }
@@ -74,11 +76,13 @@ const Edit = () => {
       if (dialogResult === true) {
         if (user?.id) {
           try {
-            await deleteUser(user?.id);
-            showNotification(`${user.username} deleted`, "success");
+            const deleteRequest = await deleteUser(user?.id);
+            if (deleteRequest.error === false) {
+              showNotification(`${user.username} deleted`, "success");
+            }
             router.push("/users");
           } catch (error) {
-            showNotification("failed to delete", "error");
+            showNotification(error as string, "error");
           }
         }
       }
@@ -90,7 +94,9 @@ const Edit = () => {
     const fetchData = async () => {
       try {
         const userData = await getUser(Number(id));
-        setUser(userData);
+        if (userData.data) {
+          setUser(userData.data);
+        }
       } catch (error) {
         console.error("Failed to fetch user", error);
       }

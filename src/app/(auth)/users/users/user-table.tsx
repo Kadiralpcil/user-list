@@ -28,16 +28,16 @@ import DataGrid, {
 import { FaUser } from "react-icons/fa";
 
 //Hooks
-import useExportDataGrid from "@/app/Hooks/useExportDataGrid";
+import useExportDataGrid from "@/hooks/useExportDataGrid";
 
 //Types
-import { Card, User } from "@/app/Lib/types";
+import { Card, User } from "@/lib/types";
 
 //Services
-import { getAllUser } from "@/app/Services/user";
-import ComponentHeader from "@/app/Components/ComponentHeader";
-import { Button } from "devextreme-react";
+import { getAllUser } from "@/services/user";
+import ComponentHeader from "@/components/ComponentHeader";
 import { useRouter } from "next/navigation";
+import notify from "devextreme/ui/notify";
 
 interface UserTableProps {
   onCurrentUserChange: (user: User) => void;
@@ -56,13 +56,14 @@ const UserTable = ({ onCurrentUserChange }: UserTableProps) => {
     const fetchData = async () => {
       try {
         const users = await getAllUser();
-        setUserList(users);
+        setUserList(users?.data || []);
       } catch (error) {
-        console.error("Failed to fetch users:", error);
+        showNotification(error as string, "error");
       }
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //Handlers
@@ -101,6 +102,32 @@ const UserTable = ({ onCurrentUserChange }: UserTableProps) => {
   const onRouteDetailPage = (e: DataGridTypes.CellClickEvent) => {
     router.push(`users/edit?id=${e.key.id}`);
   };
+
+  //Callbacks
+  const showNotification = useCallback((message: string, type: string) => {
+    notify(
+      {
+        message: message,
+        height: 45,
+        width: 150,
+        minWidth: 200,
+        type: type,
+        displayTime: 3500,
+        animation: {
+          show: {
+            type: "fade",
+            duration: 400,
+            from: 0,
+            to: 1,
+          },
+          hide: { type: "fade", duration: 40, to: 0 },
+        },
+      },
+      {
+        position: "top right",
+      }
+    );
+  }, []);
   return (
     <>
       <ComponentHeader title="User List" icon={<FaUser />} />

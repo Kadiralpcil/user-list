@@ -1,4 +1,4 @@
-import Topbar from "../../Components/Topbar";
+import Topbar from "../../../components/Topbar";
 
 export default function RootLayout({
   children,

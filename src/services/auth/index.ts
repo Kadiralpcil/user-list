@@ -1,7 +1,6 @@
 "use server";
 
-import { loginUser } from "@/app/Lib/types";
-import { cookies } from "next/headers";
+import { loginUser } from "@/lib/types";
 
 // src/services/auth.ts
 const Login = async (username?: string, password?: string) => {
@@ -16,7 +15,6 @@ const Login = async (username?: string, password?: string) => {
   });
 
   if (!response.ok) {
-    const errorData = await response.json();
     throw new Error("username or password invalid");
   }
 
@@ -25,16 +23,4 @@ const Login = async (username?: string, password?: string) => {
   return data;
 };
 
-const logOut = () => {
-  cookies().delete("email");
-  cookies().delete("firstname");
-  cookies().delete("gender");
-  cookies().delete("id");
-  cookies().delete("image");
-  cookies().delete("lastName");
-  cookies().delete("refreshToken");
-  cookies().delete("token");
-  cookies().delete("username");
-};
-
-export { Login, logOut };
+export { Login };

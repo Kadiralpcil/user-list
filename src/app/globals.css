@@ -5,8 +5,3 @@
 @import "~devextreme/dist/css/dx.light.css"; /* İstediğiniz DevExtreme tema dosyasını import edin */
 
 @import "tailwindcss/utilities";
-,
-body {
-  background-color: black;
-  color: white;
-}

@@ -5,7 +5,7 @@ import { useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 //Services
-import { Login as LoginRequest } from "../../Services/auth/index";
+import { Login as LoginRequest } from "../../services/auth/index";
 
 //UI KIT
 import Form, {
