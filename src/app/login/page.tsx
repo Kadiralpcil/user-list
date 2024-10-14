@@ -62,7 +62,6 @@ const Login = () => {
         .instance()
         .option("formData") as LoginType;
       setLoading(true);
-      // try {
       const loginResponse = await signIn("credentials", {
         ...formData,
         redirect: false,
@@ -70,11 +69,8 @@ const Login = () => {
       if (!loginResponse || loginResponse.error)
         showNotification(loginResponse?.error || "Error on login", "error");
       else router.push("/users");
-      // } catch (error) {
-      //   showNotification("Failed to Login", "error");
-      // } finally {
+
       setLoading(false);
-      // }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
@@ -132,7 +128,23 @@ const Login = () => {
   );
 
   return (
-    <div className="p-3 flex h-screen w-screen items-center justify-center">
+    <div className="p-3 flex h-screen w-screen items-center justify-center flex-col gap-2">
+      <a
+        className="text-blue-500 underline"
+        href="https://dummyjson.com/docs"
+        target="blank"
+      >
+        click here to see api dummy json
+      </a>
+      <b className="text-xl">Login Credentials </b>
+      <p className="flex gap-2">
+        <b>username:</b>
+        <p>emilys</p>
+      </p>
+      <p className="flex gap-2">
+        <b>password:</b>
+        <p>emilyspass</p>
+      </p>
       <form
         onSubmit={handleSubmit}
         className="flex shadow-lg relative w-full max-w-md bg-white rounded-lg"
